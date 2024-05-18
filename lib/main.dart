@@ -1,3 +1,4 @@
+import 'package:centsei/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +27,11 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var title = "Centsei";
+  var categories = <Category>[
+    Category("Rent"),
+    Category("Groceries"),
+    Category("Fun Money")
+  ];
 }
 
 class MyHomePage extends StatefulWidget {
@@ -86,7 +92,16 @@ class Home extends StatelessWidget {
     var appState = context.watch<MyAppState>();
 
     return Center(
-      child: Text('Statistics and categories here...')
+      child: ListView.builder(
+        itemCount: appState.categories.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              leading: Icon(Icons.monetization_on_sharp),
+              title: Text('${appState.categories[index].title}'),
+              trailing: Text('${appState.categories[index].id}'),
+            );
+          },
+      ),
     );
   }
 }
