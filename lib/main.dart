@@ -1,7 +1,7 @@
-import 'package:centsei/models/category.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:centsei/widgets/pages/create_transaction_page.dart';
+import 'package:centsei/app_state.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,17 +24,6 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-
-class MyAppState extends ChangeNotifier {
-  var title = "Centsei";
-  var categories = <Category>[
-    Category("Rent", 1898.0),
-    Category("Groceries", 750.0),
-    Category("Fun Money", 200.0)
-  ];
-
-  final formatCurrency = new NumberFormat.simpleCurrency();
 }
 
 class MyHomePage extends StatefulWidget {
@@ -97,25 +86,15 @@ class Home extends StatelessWidget {
     return Center(
       child: ListView.builder(
         itemCount: appState.categories.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              leading: Icon(Icons.monetization_on_sharp),
-              title: Text('${appState.categories[index].title}'),
-              trailing: Text(appState.formatCurrency.format(appState.categories[index].target)),
-            );
-          },
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            leading: Icon(Icons.monetization_on_sharp),
+            title: Text('${appState.categories[index].title}'),
+            trailing: Text(appState.formatCurrency
+                .format(appState.categories[index].target)),
+          );
+        },
       ),
     );
   }
 }
-
-class CreateTransaction extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Transaction input form'),
-    );
-  }
-}
-
-
