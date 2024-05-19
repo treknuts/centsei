@@ -1,5 +1,6 @@
 import 'package:centsei/models/category.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -28,10 +29,12 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var title = "Centsei";
   var categories = <Category>[
-    Category("Rent"),
-    Category("Groceries"),
-    Category("Fun Money")
+    Category("Rent", 1898.0),
+    Category("Groceries", 750.0),
+    Category("Fun Money", 200.0)
   ];
+
+  final formatCurrency = new NumberFormat.simpleCurrency();
 }
 
 class MyHomePage extends StatefulWidget {
@@ -98,7 +101,7 @@ class Home extends StatelessWidget {
             return ListTile(
               leading: Icon(Icons.monetization_on_sharp),
               title: Text('${appState.categories[index].title}'),
-              trailing: Text('${appState.categories[index].id}'),
+              trailing: Text(appState.formatCurrency.format(appState.categories[index].target)),
             );
           },
       ),
