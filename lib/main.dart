@@ -10,16 +10,19 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
+    var theme = ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)
+    );
+
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
         title: 'Centsei',
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          useMaterial3: true,
-        ),
+        theme: theme,
         home: const MyHomePage(),
       ),
     );
@@ -53,6 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Column(
         children: [
+          AppBar(
+            backgroundColor: Theme.of(context).primaryColorDark,
+            leading: Icon(Icons.monetization_on_outlined, color: Theme.of(context).colorScheme.onPrimary),
+            title: Text("Centsei", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+          ),
           Expanded(
             child: page,
           ),
