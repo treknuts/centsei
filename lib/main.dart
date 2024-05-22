@@ -10,13 +10,11 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     var theme = ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)
-    );
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue));
 
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
@@ -43,6 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Widget page;
 
+    double mWidth = MediaQuery.of(context).size.width;
+    double mHeight = MediaQuery.of(context).size.height;
+
     switch (selectedIndex) {
       case 0:
         page = Home();
@@ -54,12 +55,34 @@ class _MyHomePageState extends State<MyHomePage> {
         throw UnimplementedError("No page implemented for $selectedIndex");
     }
     return Scaffold(
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(right: (mWidth / 2) - 45, bottom: 40),
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                builder: (context) {
+                  return Center(
+                    child: Text(
+                      "Peekaboo!",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 18.0),
+                    ),
+                  );
+                });
+          },
+        ),
+      ),
       body: Column(
         children: [
           AppBar(
             backgroundColor: Theme.of(context).primaryColorDark,
-            leading: Icon(Icons.monetization_on_outlined, color: Theme.of(context).colorScheme.onPrimary),
-            title: Text("Centsei", style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+            leading: Icon(Icons.monetization_on_outlined,
+                color: Theme.of(context).colorScheme.onPrimary),
+            title: Text("Centsei",
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
           ),
           Expanded(
             child: page,
