@@ -2,7 +2,6 @@ import 'package:centsei/database/Database.dart';
 import 'package:centsei/models/category.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:centsei/widgets/pages/create_category_page.dart';
 import 'package:centsei/app_state.dart';
@@ -42,27 +41,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+  final CentseiDatabase database = CentseiDatabase();
 
   @override
   Widget build(BuildContext context) {
     Widget page;
 
-    double mWidth = MediaQuery.of(context).size.width;
-    double mHeight = MediaQuery.of(context).size.height;
-
     switch (selectedIndex) {
       case 0:
-        page = Home();
+        page = Home(database: database);
         break;
       case 1:
-        page = CreateCategory();
+        page = CreateCategory(database: database);
         break;
       default:
         throw UnimplementedError("No page implemented for $selectedIndex");
     }
     return Scaffold(
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(right: (mWidth / 2) - 45, bottom: 40),
+        padding: EdgeInsets.only(right: 8, bottom: 80),
         child: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
@@ -116,57 +113,54 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class Home extends StatefulWidget {
+  final CentseiDatabase database;
+  const Home({super.key, required this.database});
+
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  final CentseiDatabase database = CentseiDatabase();
   late Future<List<Category>> _categories;
   final formatCurrency = NumberFormat.simpleCurrency();
 
   @override
   void initState() {
+    _categories = widget.database.categories();
     super.initState();
-    _categories = database.categories();
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: FutureBuilder(
+      child: FutureBuilder<List<Category>>(
         future: _categories,
+        initialData: <Category>[],
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return ListView.builder(
-                itemCount: snapshot.data?.length,
-              itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    leading: Icon(Icons.monetization_on_outlined),
-                    title: Text('${snapshot.data?[index].title}'),
-                    // trailing: Text(formatCurrency.format(snapshot.data?[index].target)),
-                  );
-              },
-            );
-          } else {
-            return CircularProgressIndicator();
+          switch(snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return CircularProgressIndicator();
+            case ConnectionState.done:
+            default:
+              if (snapshot.hasError){
+                return Text('Uh oh! ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                return ListView.builder(
+                  itemCount: snapshot.data?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      leading: Icon(Icons.monetization_on_outlined),
+                      title: Text('${snapshot.data?[index].title}'),
+                      // trailing: Text(formatCurrency.format(snapshot.data?[index].target)),
+                    );
+                  },
+                );
+              } else {
+                return const Text('Create a category to get started!');
+              }
           }
         },
       ),
     );
-
-    // return Center(
-    //   child: ListView.builder(
-    //     itemCount: _categories.length,
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return ListTile(
-    //         leading: Icon(Icons.monetization_on_sharp),
-    //         title: Text('${_categories[index].title}'),
-    //         trailing: Text(appState.formatCurrency
-    //             .format(_categories[index].target)),
-    //       );
-    //     },
-    //   ),
-    // );
   }
 }

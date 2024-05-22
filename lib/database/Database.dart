@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:centsei/models/category.dart';
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:uuid/parsing.dart';
+import 'package:uuid/uuid.dart';
 import 'package:uuid/v4.dart';
 
 class CentseiDatabase {
@@ -30,12 +31,11 @@ class CentseiDatabase {
 
     return [
       for (final {
-        'id': id as UuidV4,
+        'id': id as String,
         'title': title as String,
         'target': target as double,
-        'actual': actual as double,
       } in categoryMaps)
-        Category(title, target),
+        Category(UuidV4(), title, target),
     ];
   }
 

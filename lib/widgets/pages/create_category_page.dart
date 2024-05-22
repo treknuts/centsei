@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../app_state.dart';
+import 'package:uuid/v4.dart';
 import '../../database/Database.dart';
 import '../../models/category.dart';
 
 class CreateCategory extends StatefulWidget {
-  const CreateCategory({super.key});
+  final CentseiDatabase database;
+
+  const CreateCategory({super.key, required this.database});
 
   @override
   State<CreateCategory> createState() => _CreateCategoryState();
 }
 
 class _CreateCategoryState extends State<CreateCategory> {
-  final CentseiDatabase database = CentseiDatabase();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _targetController = TextEditingController();
@@ -25,8 +25,6 @@ class _CreateCategoryState extends State<CreateCategory> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -72,8 +70,10 @@ class _CreateCategoryState extends State<CreateCategory> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         var targetAmount = double.parse(_targetController.text);
-                        var newCat = Category(_nameController.text, targetAmount);
-                        database.insertCategory(newCat);
+
+                        var newCat = Category(UuidV4(), _nameController.text, targetAmount);
+                        widget.database.insertCategory(newCat);
+                        print(newCat.id.toString());
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text('Creating Category: ${_nameController.text}')
