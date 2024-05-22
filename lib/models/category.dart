@@ -14,5 +14,18 @@ class Category {
     actual = 0.0;
   }
 
+  Map<String, Object?> toMap() {
+    return {
+      'title': title,
+      'target': target,
+      'actual': actual
+    };
+  }
+
+  @override
+  String toString() {
+    return 'Category{title: $title, target: $target, actual: $actual"}';
+  }
+
 }
 

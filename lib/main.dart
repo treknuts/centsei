@@ -1,9 +1,13 @@
+import 'package:centsei/database/Database.dart';
+import 'package:centsei/models/category.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-import 'package:centsei/widgets/pages/create_transaction_page.dart';
+import 'package:centsei/widgets/pages/create_category_page.dart';
 import 'package:centsei/app_state.dart';
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -12,6 +16,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsFlutterBinding.ensureInitialized();
+
     var theme = ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue));
@@ -49,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = Home();
         break;
       case 1:
-        page = CreateTransaction();
+        page = CreateCategory();
         break;
       default:
         throw UnimplementedError("No page implemented for $selectedIndex");
@@ -109,23 +115,58 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final CentseiDatabase database = CentseiDatabase();
+  late Future<List<Category>> _categories;
+  final formatCurrency = NumberFormat.simpleCurrency();
+
+  @override
+  void initState() {
+    super.initState();
+    _categories = database.categories();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Center(
-      child: ListView.builder(
-        itemCount: appState.categories.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            leading: Icon(Icons.monetization_on_sharp),
-            title: Text('${appState.categories[index].title}'),
-            trailing: Text(appState.formatCurrency
-                .format(appState.categories[index].target)),
-          );
+      child: FutureBuilder(
+        future: _categories,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return ListView.builder(
+                itemCount: snapshot.data?.length,
+              itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: Icon(Icons.monetization_on_outlined),
+                    title: Text('${snapshot.data?[index].title}'),
+                    // trailing: Text(formatCurrency.format(snapshot.data?[index].target)),
+                  );
+              },
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
         },
       ),
     );
+
+    // return Center(
+    //   child: ListView.builder(
+    //     itemCount: _categories.length,
+    //     itemBuilder: (BuildContext context, int index) {
+    //       return ListTile(
+    //         leading: Icon(Icons.monetization_on_sharp),
+    //         title: Text('${_categories[index].title}'),
+    //         trailing: Text(appState.formatCurrency
+    //             .format(_categories[index].target)),
+    //       );
+    //     },
+    //   ),
+    // );
   }
 }

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app_state.dart';
+import '../../database/Database.dart';
 import '../../models/category.dart';
 
-class CreateTransaction extends StatefulWidget {
-  const CreateTransaction({super.key});
+class CreateCategory extends StatefulWidget {
+  const CreateCategory({super.key});
 
   @override
-  State<CreateTransaction> createState() => _CreateTransactionState();
+  State<CreateCategory> createState() => _CreateCategoryState();
 }
 
-class _CreateTransactionState extends State<CreateTransaction> {
+class _CreateCategoryState extends State<CreateCategory> {
+  final CentseiDatabase database = CentseiDatabase();
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _targetController = TextEditingController();
@@ -70,9 +72,8 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         var targetAmount = double.parse(_targetController.text);
-                        appState.categories.add(
-                            Category(_nameController.text, targetAmount)
-                        );
+                        var newCat = Category(_nameController.text, targetAmount);
+                        database.insertCategory(newCat);
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text('Creating Category: ${_nameController.text}')
