@@ -2,6 +2,7 @@ import 'package:centsei/database/database.dart';
 import 'package:centsei/models/category.dart';
 import 'package:centsei/widgets/pages/categories_page.dart';
 import 'package:centsei/widgets/pages/transactions_page.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -54,10 +55,10 @@ class _MyHomePageState extends State<MyHomePage> {
         page = Home(database: database);
         break;
       case 1:
-        page = CategoryList(categories: database.categories(), database: database,);
+        page = CategoryList(database: database);
         break;
       case 2:
-        page = TransactionList();
+        page = TransactionList(database: database);
       default:
         throw UnimplementedError("No page implemented for $selectedIndex");
     }

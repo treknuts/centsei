@@ -6,11 +6,9 @@ import '../../models/category.dart';
 class CategoryList extends StatefulWidget {
   const CategoryList({
     super.key,
-    required Future<List<Category>> categories,
     required database
-  }) : _categories = categories, _database = database;
+  }) : _database = database;
 
-  final Future<List<Category>> _categories;
   final Database _database;
 
   @override
@@ -18,13 +16,27 @@ class CategoryList extends StatefulWidget {
 }
 
 class _CategoryListState extends State<CategoryList> {
+  late Future<List<Category>> _categories;
+
+  @override
+  void initState() {
+    _categories = widget._database.categories();
+    super.initState();
+  }
+
+  void updateCategories() {
+    setState(() {
+      _categories = widget._database.categories();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
           child: FutureBuilder<List<Category>>(
-            future: widget._categories,
+            future: _categories,
             initialData: <Category>[],
             builder: (context, snapshot) {
               switch (snapshot.connectionState) {
@@ -61,7 +73,9 @@ class _CategoryListState extends State<CategoryList> {
                     database: widget._database,
                   ),
                 );
-              });
+              }).then((value) {
+                updateCategories();
+              },);
         }, child: Icon(Icons.add))
       ],
     );

@@ -21,7 +21,9 @@ class _CreateTransactionState extends State<CreateTransaction> {
 
   @override
   void dispose() {
+    _merchantController.dispose();
     _descriptionController.dispose();
+    _amountController.dispose();
     super.dispose();
   }
 
@@ -88,11 +90,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           targetAmount,
                         );
                         widget.database.insertTransaction(newTransaction);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Adding transaction...')));
-                        Navigator.pop(
-                          context,
-                        );
+                        Navigator.pop(context);
                       }
                     },
                     child: Text('Go!')),
