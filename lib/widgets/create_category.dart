@@ -1,10 +1,11 @@
+import 'package:centsei/main.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/v4.dart';
-import '../../database/Database.dart';
-import '../../models/category.dart';
+import '../database/database.dart';
+import '../models/category.dart';
 
 class CreateCategory extends StatefulWidget {
-  final CentseiDatabase database;
+  final Database database;
 
   const CreateCategory({super.key, required this.database});
 
@@ -71,7 +72,7 @@ class _CreateCategoryState extends State<CreateCategory> {
                       if (_formKey.currentState!.validate()) {
                         var targetAmount = double.parse(_targetController.text);
 
-                        var newCat = Category(UuidV4(), _nameController.text, targetAmount);
+                        var newCat = Category(_nameController.text, targetAmount);
                         widget.database.insertCategory(newCat);
                         print(newCat.id.toString());
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,6 +80,7 @@ class _CreateCategoryState extends State<CreateCategory> {
                                 content: Text('Creating Category: ${_nameController.text}')
                             )
                         );
+                        Navigator.pop(context);
                       }
                     },
                     child: Text('Go!')

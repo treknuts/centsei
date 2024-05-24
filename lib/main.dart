@@ -1,9 +1,13 @@
-import 'package:centsei/database/Database.dart';
+import 'package:centsei/database/database.dart';
 import 'package:centsei/models/category.dart';
+import 'package:centsei/widgets/create_transaction.dart';
+import 'package:centsei/widgets/pages/categories_page.dart';
+import 'package:centsei/widgets/pages/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-import 'package:centsei/widgets/pages/create_category_page.dart';
+import 'package:centsei/widgets/create_category.dart';
 import 'package:centsei/app_state.dart';
 
 void main() async {
@@ -41,19 +45,23 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
-  final CentseiDatabase database = CentseiDatabase();
+  final Database database = Database();
+
 
   @override
   Widget build(BuildContext context) {
     Widget page;
+    var state = context.watch<MyAppState>();
 
     switch (selectedIndex) {
       case 0:
         page = Home(database: database);
         break;
       case 1:
-        page = CreateCategory(database: database);
+        page = CategoryList(categories: database.categories(), database: database,);
         break;
+      case 2:
+        page = TransactionList();
       default:
         throw UnimplementedError("No page implemented for $selectedIndex");
     }
@@ -67,10 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 context: context,
                 builder: (context) {
                   return Center(
-                    child: Text(
-                      "Peekaboo!",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18.0),
+                    child: CreateTransaction(
+                      database: database,
                     ),
                   );
                 });
@@ -96,7 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
               animationDuration: Duration(milliseconds: 1000),
               destinations: const [
                 NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-                NavigationDestination(icon: Icon(Icons.add), label: "New")
+                NavigationDestination(icon: Icon(Icons.category), label: "Categories"),
+                NavigationDestination(icon: Icon(Icons.monetization_on_rounded), label: "Transactions")
               ],
               selectedIndex: selectedIndex,
               onDestinationSelected: (int index) {
@@ -113,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class Home extends StatefulWidget {
-  final CentseiDatabase database;
+  final Database database;
   const Home({super.key, required this.database});
 
   @override
@@ -132,35 +139,17 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    var state = context.watch<MyAppState>();
+
     return Center(
-      child: FutureBuilder<List<Category>>(
-        future: _categories,
-        initialData: <Category>[],
-        builder: (context, snapshot) {
-          switch(snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return CircularProgressIndicator();
-            case ConnectionState.done:
-            default:
-              if (snapshot.hasError){
-                return Text('Uh oh! ${snapshot.error}');
-              } else if (snapshot.hasData) {
-                return ListView.builder(
-                  itemCount: snapshot.data?.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      leading: Icon(Icons.monetization_on_outlined),
-                      title: Text('${snapshot.data?[index].title}'),
-                      // trailing: Text(formatCurrency.format(snapshot.data?[index].target)),
-                    );
-                  },
-                );
-              } else {
-                return const Text('Create a category to get started!');
-              }
-          }
-        },
+      child: Icon(
+        Icons.emoji_events_outlined,
+        size: 92.0,
       ),
     );
   }
 }
+
+
+
+
