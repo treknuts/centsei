@@ -1,13 +1,10 @@
 import 'package:centsei/database/database.dart';
 import 'package:centsei/models/category.dart';
-import 'package:centsei/widgets/create_transaction.dart';
 import 'package:centsei/widgets/pages/categories_page.dart';
 import 'package:centsei/widgets/pages/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
-import 'package:centsei/widgets/create_category.dart';
 import 'package:centsei/app_state.dart';
 
 void main() async {
@@ -30,14 +27,14 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Centsei',
         theme: theme,
-        home: const MyHomePage(),
+        home: const MyHomePage(index: 0,),
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({super.key, required index});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -45,13 +42,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
-  final Database database = Database();
-
 
   @override
   Widget build(BuildContext context) {
     Widget page;
     var state = context.watch<MyAppState>();
+    var database = state.database;
 
     switch (selectedIndex) {
       case 0:
@@ -66,23 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
         throw UnimplementedError("No page implemented for $selectedIndex");
     }
     return Scaffold(
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(right: 8, bottom: 80),
-        child: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return Center(
-                    child: CreateTransaction(
-                      database: database,
-                    ),
-                  );
-                });
-          },
-        ),
-      ),
       body: Column(
         children: [
           AppBar(
@@ -139,8 +118,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<MyAppState>();
-
     return Center(
       child: Icon(
         Icons.emoji_events_outlined,

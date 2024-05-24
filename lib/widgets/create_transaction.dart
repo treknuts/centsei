@@ -1,8 +1,7 @@
-import 'package:centsei/app_state.dart';
+import 'package:centsei/main.dart';
 import 'package:centsei/models/transaction.dart';
 import 'package:centsei/widgets/pages/transactions_page.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../database/database.dart';
 
 class CreateTransaction extends StatefulWidget {
@@ -28,7 +27,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<MyAppState>();
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -83,20 +81,18 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         var targetAmount = double.parse(_amountController.text);
-                        state.transactions.add(
-                          Transaction(
-                            _merchantController.text,
-                            _descriptionController.text,
-                            targetAmount,
-                          ),
-                        );
 
-                        // var newCat = Category(UuidV4(), _descriptionController.text, targetAmount);
-                        // widget.database.insertCategory(newCat);
-                        // print(newCat.id.toString());
+                        var newTransaction = Transaction(
+                          _merchantController.text,
+                          _descriptionController.text,
+                          targetAmount,
+                        );
+                        widget.database.insertTransaction(newTransaction);
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Adding transaction...')));
-                        Navigator.pop(context);
+                        Navigator.pop(
+                          context,
+                        );
                       }
                     },
                     child: Text('Go!')),

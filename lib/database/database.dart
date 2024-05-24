@@ -14,15 +14,11 @@ class Database {
   _initializeDatabase() async {
     return sqflite.openDatabase(
       join(await sqflite.getDatabasesPath(), 'centsei.db'),
-      onCreate: (db, version) {
-        return db.execute(
-          """
-            CREATE TABLE categories(id VARCHAR(256), title VARCHAR(32), target DOUBLE, actual DOUBLE);
-            CREATE TABLE transactions(id VARCHAR(256), merchant VARCHAR(32), description VARCHAR(64), amount DOUBLE);
-          """
-        );
+      onCreate: (db, version) async {
+        await db.execute('CREATE TABLE categories(id VARCHAR(256), title VARCHAR(32), target DOUBLE, actual DOUBLE);');
+        await db.execute('CREATE TABLE transactions(id VARCHAR(256), merchant VARCHAR(32), description VARCHAR(64), amount DOUBLE);');
       },
-      version: 1,
+      version: 2,
     );
   }
 
@@ -53,6 +49,16 @@ class Database {
       } in transactionMaps)
         centsei.Transaction(merchant, description, amount),
     ];
+  }
+
+  Future<void> insertTransaction(centsei.Transaction transaction) async {
+    final db = await database;
+
+    await db.insert(
+      'transactions',
+      transaction.toMap(),
+      conflictAlgorithm: sqflite.ConflictAlgorithm.replace,
+    );
   }
 
   Future<void> insertCategory(Category category) async {
