@@ -1,6 +1,4 @@
-import 'package:centsei/main.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/v4.dart';
 import '../database/database.dart';
 import '../models/category.dart';
 

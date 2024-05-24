@@ -1,8 +1,6 @@
 import 'package:centsei/database/database.dart';
-import 'package:centsei/models/category.dart';
 import 'package:centsei/widgets/pages/categories_page.dart';
 import 'package:centsei/widgets/pages/transactions_page.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -108,12 +106,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late Future<List<Category>> _categories;
   final formatCurrency = NumberFormat.simpleCurrency();
 
   @override
   void initState() {
-    _categories = widget.database.categories();
     super.initState();
   }
 

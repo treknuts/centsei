@@ -1,6 +1,4 @@
-import 'package:centsei/main.dart';
 import 'package:centsei/models/transaction.dart';
-import 'package:centsei/widgets/pages/transactions_page.dart';
 import 'package:flutter/material.dart';
 import '../../database/database.dart';
 
