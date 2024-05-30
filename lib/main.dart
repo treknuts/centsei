@@ -1,33 +1,46 @@
 import 'package:centsei/database/database.dart';
+import 'package:centsei/router.dart';
 import 'package:centsei/widgets/pages/categories_page.dart';
 import 'package:centsei/widgets/pages/transactions_page.dart';
+import 'package:firebase_auth/firebase_auth.dart'
+    hide EmailAuthProvider, PhoneAuthProvider;
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:centsei/app_state.dart';
 
+import 'authentication.dart';
+
 void main() async {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ApplicationState(),
+      builder: ((context, child) => const MyApp()),
+    ),
+  );
 }
+
+final _router = getRouter();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    WidgetsFlutterBinding.ensureInitialized();
-
     var theme = ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue));
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    );
 
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'Centsei',
-        theme: theme,
-        home: const MyHomePage(index: 0,),
-      ),
+    return MaterialApp.router(
+      title: 'Centsei',
+      theme: theme,
+      routerConfig: _router,
     );
   }
 }
@@ -45,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     Widget page;
-    var state = context.watch<MyAppState>();
+    var state = context.watch<ApplicationState>();
     var database = state.database;
 
     switch (selectedIndex) {
@@ -57,6 +70,55 @@ class _MyHomePageState extends State<MyHomePage> {
         break;
       case 2:
         page = TransactionList(database: database);
+      case 3:
+        if (state.loggedIn) {
+          page = ProfileScreen(
+            providers: const [],
+            actions: [
+              SignedOutAction((context) {
+                context.pushReplacement('/');
+              })
+            ],
+          );
+        } else {
+          page = SignInScreen(
+            actions: [
+              ForgotPasswordAction(((context, email) {
+                final uri = Uri(
+                  path: '/sign-in/forgot-password',
+                  queryParameters: <String, String?>{
+                    'email': email,
+                  },
+                );
+                context.push(uri.toString());
+              })),
+              AuthStateChangeAction(((context, state){
+                final user = switch(state) {
+                  SignedIn state => state.user,
+                  UserCreated state => state.credential.user,
+                  _ => null
+                };
+
+                if (user == null) {
+                  return;
+                }
+
+                if (state is UserCreated) {
+                  user.updateDisplayName(user.email!.split('@')[0]);
+                }
+
+                if (!user.emailVerified) {
+                  user.sendEmailVerification();
+                  const snackBar = SnackBar(
+                    content: Text('Check your email to verify account!'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+                context.pushReplacement('/');
+              })),
+            ],
+          );
+        }
       default:
         throw UnimplementedError("No page implemented for $selectedIndex");
     }
@@ -78,10 +140,30 @@ class _MyHomePageState extends State<MyHomePage> {
             bottom: true,
             child: NavigationBar(
               animationDuration: Duration(milliseconds: 1000),
-              destinations: const [
-                NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-                NavigationDestination(icon: Icon(Icons.category), label: "Categories"),
-                NavigationDestination(icon: Icon(Icons.monetization_on_rounded), label: "Transactions")
+              destinations: [
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.category),
+                  label: "Categories",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.monetization_on_rounded),
+                  label: "Transactions",
+                ),
+                NavigationDestination(
+                  icon: state.loggedIn ? Icon(Icons.person) : Icon(Icons.login),
+                  label: state.loggedIn ? "Profile" : "Login",
+                )
+                // Consumer<ApplicationState>(
+                //   builder: (context, appState, _) => AuthFunc(
+                //       loggedIn: appState.loggedIn,
+                //       signOut: () {
+                //         FirebaseAuth.instance.signOut();
+                //       }),
+                // ),
               ],
               selectedIndex: selectedIndex,
               onDestinationSelected: (int index) {
@@ -123,7 +205,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-
-
-
-

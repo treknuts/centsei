@@ -36,7 +36,7 @@ class _TransactionListState extends State<TransactionList> {
 
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<MyAppState>();
+    var state = context.watch<ApplicationState>();
 
     return Column(
       children: [
@@ -50,7 +50,8 @@ class _TransactionListState extends State<TransactionList> {
               }
 
               if (snapshot.hasError) {
-                return const Center(child: Text('Uh oh! Something went horribly wrong...'));
+                return const Center(
+                    child: Text('Uh oh! Something went horribly wrong...'));
               }
 
               if (!snapshot.hasData) {
@@ -58,7 +59,8 @@ class _TransactionListState extends State<TransactionList> {
                     child: Text('Create a category to get started!'));
               }
 
-              List<Transaction> transactions = snapshot.data as List<Transaction>;
+              List<Transaction> transactions =
+                  snapshot.data as List<Transaction>;
               return ListView.builder(
                 itemCount: transactions.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -83,15 +85,22 @@ class _TransactionListState extends State<TransactionList> {
                   onPressed: () {
                     showModalBottomSheet(
                         context: context,
+                        isScrollControlled: true,
                         builder: (context) {
-                          return Center(
-                            child: CreateTransaction(
-                              database: widget._database,
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * .9,
+                            width: MediaQuery.of(context).size.width,
+                            child: Center(
+                              child: CreateTransaction(
+                                database: widget._database,
+                              ),
                             ),
                           );
-                        }).then((value) {
-                          updateTransactions();
-                        },);
+                        }).then(
+                      (value) {
+                        updateTransactions();
+                      },
+                    );
                   },
                   child: Icon(Icons.add)),
             ),

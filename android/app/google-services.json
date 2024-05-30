@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "228858929431",
+    "project_id": "centsei-14a6d",
+    "storage_bucket": "centsei-14a6d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228858929431:android:12facdb4f5107b5afad752",
+        "android_client_info": {
+          "package_name": "dev.treknuts.centsei"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAp8KgXVMz0sfLsi4PPEKNTC_a2Oc594c4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
