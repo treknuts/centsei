@@ -44,4 +44,4 @@ app.*.map.json
 
 # Firebase options file which contains API keys
 # Copy firebase_options_example.dart and fill in API key
-./lib/firebase_options.dart
+lib/firebase_options.dart
