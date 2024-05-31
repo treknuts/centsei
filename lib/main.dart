@@ -1,17 +1,11 @@
-import 'package:centsei/database/database.dart';
 import 'package:centsei/router.dart';
 import 'package:centsei/widgets/pages/categories_page.dart';
 import 'package:centsei/widgets/pages/transactions_page.dart';
-import 'package:firebase_auth/firebase_auth.dart'
-    hide EmailAuthProvider, PhoneAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:centsei/app_state.dart';
-
-import 'authentication.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,17 +53,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     Widget page;
     var state = context.watch<ApplicationState>();
-    var database = state.database;
+    // var database = state.database;
 
     switch (selectedIndex) {
       case 0:
-        page = Home(database: database);
+        page = Home();
         break;
       case 1:
-        page = CategoryList(database: database);
+        page = CategoryList();
         break;
       case 2:
-        page = TransactionList(database: database);
+        page = TransactionList(transactions: state.transactions);
       case 3:
         if (state.loggedIn) {
           page = ProfileScreen(
@@ -179,22 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Home extends StatefulWidget {
-  final Database database;
-  const Home({super.key, required this.database});
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
-  final formatCurrency = NumberFormat.simpleCurrency();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(

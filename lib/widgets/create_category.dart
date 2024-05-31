@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import '../database/database.dart';
-import '../models/category.dart';
 
 class CreateCategory extends StatefulWidget {
-  final Database database;
 
-  const CreateCategory({super.key, required this.database});
+  const CreateCategory({super.key});
 
   @override
   State<CreateCategory> createState() => _CreateCategoryState();
@@ -68,11 +65,9 @@ class _CreateCategoryState extends State<CreateCategory> {
                 ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        var targetAmount = double.parse(_targetController.text);
+                        // var targetAmount = double.parse(_targetController.text);
 
-                        var newCat = Category(_nameController.text, targetAmount);
-                        widget.database.insertCategory(newCat);
-                        print(newCat.id.toString());
+                        // var newCat = Category(_nameController.text, targetAmount);
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text('Creating Category: ${_nameController.text}')

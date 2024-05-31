@@ -1,13 +1,8 @@
-import 'package:centsei/models/transaction.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
-import '../../database/database.dart';
 
 class CreateTransaction extends StatefulWidget {
-  final Database database;
 
-  const CreateTransaction({super.key, required this.database});
+  const CreateTransaction({super.key});
 
   @override
   State<CreateTransaction> createState() => _CreateTransactionState();
@@ -29,7 +24,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    var bottomPadding = MediaQuery.of(context).viewInsets.bottom;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -81,14 +75,12 @@ class _CreateTransactionState extends State<CreateTransaction> {
               ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      var targetAmount = double.parse(_amountController.text);
-
-                      var newTransaction = Transaction(
-                        _merchantController.text,
-                        _descriptionController.text,
-                        targetAmount,
-                      );
-                      widget.database.insertTransaction(newTransaction);
+                      // var targetAmount = double.parse(_amountController.text);
+                      // var newTransaction = Transaction(
+                      //   _merchantController.text,
+                      //   _descriptionController.text,
+                      //   targetAmount,
+                      // );
                       Navigator.pop(context);
                     }
                   },

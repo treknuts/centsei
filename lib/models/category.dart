@@ -1,31 +1,38 @@
-import 'package:centsei/models/transaction.dart';
-import 'package:uuid/v4.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Category {
-  UuidV4? id;
+  String? id;
   String? title;
-  List<Transaction>? transactions;
-  late double target;
+  double? target;
   double? actual;
 
-  Category(this.title, this.target) {
-    id = UuidV4();
-    actual = 0.0;
+  Category({
+    this.id,
+    this.title,
+    this.target,
+    this.actual,
+  });
+
+  factory Category.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot,
+      SnapshotOptions? options
+      ) {
+    final data = snapshot.data();
+    return Category(
+      id: data?['id'],
+      title: data?['title'],
+      target: data?['target'],
+      actual: data?['actual'],
+    );
   }
 
-  Map<String, Object?> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'id': id?.generate(),
-      'title': title,
-      'target': target,
-      'actual': actual
+      if (id != null) "id":id,
+      if (title != null) "title":title,
+      if (target != null) "target":target,
+      if (actual != null) "actual":actual,
     };
   }
-
-  @override
-  String toString() {
-    return 'Category{title: $title, target: $target, actual: $actual"}';
-  }
-
 }
 

@@ -1,26 +1,34 @@
-import 'package:uuid/v4.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Transaction {
-  UuidV4? id;
   String? merchant;
   String? description;
   double? amount;
 
-  Transaction(this.merchant, this.description, this.amount) {
-    id = UuidV4();
+  Transaction({
+   this.merchant,
+   this.description,
+   this.amount
+  });
+
+  factory Transaction.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> snapshot,
+      SnapshotOptions? options
+      ) {
+    final data = snapshot.data();
+    return Transaction(
+      merchant: data?['merchant'],
+      description: data?['description'],
+      amount: data?['amount']
+    );
   }
 
-  Map<String, Object?> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'id': id?.generate(),
-      'merchant': merchant,
-      'description': description,
-      'amount': amount
+      if (merchant != null) "merchant":merchant,
+      if (description != null) "description":description,
+      if (amount != null) "amount":amount,
     };
   }
 
-  @override
-  String toString() {
-    return 'Transaction{merchant: $merchant, description: $description, amount: $amount"}';
-  }
 }
